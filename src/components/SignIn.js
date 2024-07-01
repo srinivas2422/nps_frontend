@@ -21,8 +21,8 @@ const SignIn = ({ title, btn, onSignIn }) => {
 
     try {
       const response = await axios.post(apiEndpoint, { phone, password });
-      console.log(response.data);
-      onSignIn();
+      console.log(response.data.message);
+      onSignIn(response.data.userId);
       setTimeout(() => {
         navigate('/');
       });

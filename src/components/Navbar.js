@@ -1,4 +1,3 @@
-// import React, { useState } from 'react';
 import { Link } from "react-router-dom";
 
 const Navbar = ({ isAuthenticated, handleSignOut }) => {
@@ -71,7 +70,7 @@ const Navbar = ({ isAuthenticated, handleSignOut }) => {
                       aria-expanded="false"
                     >
                       <img
-                        src="https://github.com/mdo.png"
+                        src="./images/profile_icon.jpg"
                         alt="mdo"
                         width={32}
                         height={32}
@@ -83,7 +82,7 @@ const Navbar = ({ isAuthenticated, handleSignOut }) => {
                     >
                       
                       <li>
-                        <Link className="dropdown-item" href="#">
+                        <Link className="dropdown-item" to="/profile">
                           Profile
                         </Link>
                       </li>
@@ -91,8 +90,8 @@ const Navbar = ({ isAuthenticated, handleSignOut }) => {
                       <li>
                         <Link
                           className="dropdown-item"
-                          href="#"
                           onClick={handleSignOut}
+                          to="/"
                         >
                           Sign out
                         </Link>

@@ -1,78 +1,124 @@
-const Flat = () => {
-    const flat = {
-      image: '/images/house3.jpg', 
-      about: '2 BHK Flat In Devika Residency For Rent In Yousufguda. It is a semi-furnished apartment built on the 6th floor out of a total of 7 floors. It is an ideal home providing beautiful views of the city’s skyline. This property is designed to suit your space needs and has 3 bedrooms and 3 bathrooms. It also includes 0 balcony. This rented Flat is North-East facing and compliant with Vastu Shastra principles. Nestled inside a gated society, this 3 BHK Flat is a perfect accommodation for families seeking a contemporary lifestyle. The built-up area of the residential property is 1700 Square feet. The carpet area of this modern rented Flat is 1275 Square feet. There is also a provision of lift facility that gives convenience to the families, especially senior citizens. The property is equipped with power backup facility. The Flat is available for a monthly rent of Rs 50,000. The security deposit payable is Rs 1,00,000.',
-      location: 'Devika Residency In Yousufguda In Jubilee Hills',
-      amenities: [
-        'Wi-Fi',
-        'Air Conditioning',
-        'Fully Equipped Kitchen',
-        'Washer/Dryer',
-        'Gym Access',
-        '24/7 Security',
-        'Swimming Pool',
-      ],
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+
+const Flat = ({ isAuthenticated }) => {
+    const { id } = useParams();
+    const [property, setProperty] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [ownerDetails, setOwnerDetails] = useState(null);
+    const [ownerLoading, setOwnerLoading] = useState(false);
+    const [ownerError, setOwnerError] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+
+    const fetchOwnerDetails = async () => {
+        if (isAuthenticated) {
+            setOwnerLoading(true);
+            try {
+                const userId = property.userId;
+                const response = await axios.get(`http://localhost:5000/api/users/${userId}`);
+                setOwnerDetails(response.data);
+                setShowModal(true);
+            } catch (err) {
+                setOwnerError('An error occurred while fetching owner details');
+            } finally {
+                setOwnerLoading(false);
+            }
+        } else {
+            alert('Please log in to get the owner details.');
+        }
     };
-  
+
+    useEffect(() => {
+        const fetchProperty = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5000/api/usersprop/properties/rent/${id}`);
+                setProperty(response.data);
+            } catch (err) {
+                setError('An error occurred while fetching property details');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProperty();
+    }, [id]);
+
+    if (loading) return <p>Loading property details...</p>;
+    if (error) return <p>{error}</p>;
+
     return (
-      <div className="container">
-        <h1 className="m-3">
-        2 BHK Flat In Devika Residency For Rent In Yousufguda
-        </h1>
-        <div className="flat-container">
-          <img src={flat.image} alt="Flat" className="flat-image" />
-          <div className="flat-details mt-5 ms-1">
-            <table className="table table-striped table-bordered border-primary flat-table">
-              <thead>
-                <tr>
-                  <th scope="col">Rent</th>
-                  <th scope="col">Deposit</th>
-                  <th scope="col">Builtup</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <span>&#8377;</span>50,000
-                  </td>
-                  <td>
-                    <span>&#8377;</span>1,50,000
-                  </td>
-                  <td>3000</td>
-                </tr>
-                <tr>
-                  <th scope="col">Furnishing</th>
-                  <th scope="col">Apartment Type</th>
-                  <th scope="col">Preferred Tenants</th>
-                </tr>
-                <tr>
-                  <td>Semi-furnished</td>
-                  <td>2BHK</td>
-                  <td>Family</td>
-                </tr>
-              </tbody>
-            </table>
-            <div className="d-grid gap-2">
-                      <button type="button" className="btn btn-danger">
-                        Get Owner Details
-                      </button>
+        <div className="container">
+            {property && (
+                <>
+                    <h1 className="m-3">{property.apartmentType} House For Rent in {property.location}</h1>
+                    <div className="flat-container">
+                        <img src={`http://localhost:5000/${property.imagePath}`} alt="Flat" className="flat-image" />
+                        <div className="flat-details mt-5 ms-1">
+                            <table className="table table-striped table-bordered border-primary flat-table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Rent</th>
+                                        <th scope="col">Deposit</th>
+                                        <th scope="col">Builtup</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span>&#8377;</span>{property.rent}</td>
+                                        <td><span>&#8377;</span>{property.deposit}</td>
+                                        <td>{property.builtupArea}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col">Furnishing</th>
+                                        <th scope="col">Apartment Type</th>
+                                        <th scope="col">Preferred Tenants</th>
+                                    </tr>
+                                    <tr>
+                                        <td>{property.furnishing}</td>
+                                        <td>{property.apartmentType}</td>
+                                        <td>{property.preferredTenants}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div className="d-grid gap-2">
+                                <button type="button" className="btn btn-danger" onClick={fetchOwnerDetails}>
+                                    Get Owner Details
+                                </button>
+                            </div>
+                        </div>
                     </div>
-          </div>
+                    <div className="additional-content mt-3">
+                        <h2 className="mb-3">About Flat</h2>
+                        <p>{property.description}</p>
+                        <h2 className="mb-3">Location</h2>
+                        <p>{property.location}</p>
+                    </div>
+                </>
+            )}
+            {ownerLoading && <p>Loading owner details...</p>}
+            {ownerError && <p>{ownerError}</p>}
+            {ownerDetails && (
+                <div className={`modal ${showModal ? 'show' : ''}`} tabIndex="-1" role="dialog" style={{ display: showModal ? 'block' : 'none' }}>
+                    <div className="modal-dialog" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">Owner Details</h5>
+                            </div>
+                            <div className="modal-body">
+                                <p>Name: {ownerDetails.name}</p>
+                                <p>Phone: {ownerDetails.phone}</p>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {showModal && <div className="modal-backdrop show"></div>}
         </div>
-        <div className="additional-content mt-3">
-          <h2 className="mb-3">About Flat</h2>
-          <p>{flat.about}</p>
-          <h2 className="mb-3">Location</h2>
-          <p>{flat.location}</p>
-          <h2 className="mb-3">Amenities</h2>
-          <ul>
-            {flat.amenities.map((amenity, index) => (
-              <li key={index}>{amenity}</li>
-            ))}
-          </ul>
-        </div>
-      </div>
     );
-  };
-  
-  export default Flat;
+};
+
+export default Flat;

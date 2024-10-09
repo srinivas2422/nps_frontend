@@ -30,15 +30,15 @@ const Postproperty = ({ userId, handleCancel }) => {
     formData.append('furnishing', propertyDetails.furnishing);
     formData.append('apartmentType', propertyDetails.apartmentType);
     formData.append('preferredTenants', propertyDetails.preferredTenants);
-    formData.append('userId', userId); // Uncomment this line if you want to send userId in the formData
-
+    formData.append('userId', userId);
+    
     try {
-      await axios.post('http://localhost:5000/api/usersprop/properties', formData, {
+      const response = await axios.post('http://localhost:5000/api/usersprop/properties', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-
+      console.log(response.data);
       setPropertyDetails({
         location: '',
         description: '',
@@ -99,8 +99,8 @@ const Postproperty = ({ userId, handleCancel }) => {
             <label htmlFor="furnishing" className="form-label">Furnishing</label>
             <select  className="form-control"  id="furnishing"  name="furnishing"  value={propertyDetails.furnishing}  onChange={handleChange}  required>
               <option value="">Select</option>
-              <option value="Fully Furnished">Fully Furnished</option>
-              <option value="Semi Furnished">Semi Furnished</option>
+              <option value="FullyFurnished">Fully Furnished</option>
+              <option value="SemiFurnished">Semi Furnished</option>
               <option value="Unfurnished">Unfurnished</option>
             </select>
           </div>
@@ -112,6 +112,7 @@ const Postproperty = ({ userId, handleCancel }) => {
               <option value="2BHK">2BHK</option>
               <option value="3BHK">3BHK</option>
               <option value="4BHK">4BHK</option>
+              <option value="4BHK+">4BHK+</option>
             </select>
           </div>
           <div className="mb-3">
@@ -132,3 +133,4 @@ const Postproperty = ({ userId, handleCancel }) => {
 }
 
 export default Postproperty;
+

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import YourProperties from  './Yourproperties';
+import Yourproperties from '../components/Yourproperties';
 
 const Profile = ({ user, isAuthenticated }) => {
   const [activeSection, setActiveSection] = useState('basicInfo');
@@ -11,6 +11,7 @@ const Profile = ({ user, isAuthenticated }) => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleSectionChange = (section) => {
     setActiveSection(section);
@@ -37,6 +38,30 @@ const Profile = ({ user, isAuthenticated }) => {
     }
   }, [user]);
 
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setUserInfo((prevState) => ({
+      ...prevState,
+      [id]: value,
+    }));
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      await axios.put(`http://localhost:5000/api/users/${user}`, userInfo);
+      setSuccess('User details updated successfully.');
+    } catch (err) {
+      setError('Error updating user details. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -56,7 +81,7 @@ const Profile = ({ user, isAuthenticated }) => {
               }`}
               onClick={() => handleSectionChange('basicInfo')}
             >
-              Basic Info
+              Your Details
             </button>
             <button
               className={`list-group-item list-group-item-action ${
@@ -76,47 +101,54 @@ const Profile = ({ user, isAuthenticated }) => {
             </button>
           </div>
         </div>
-        <div className="col-md-9" >{/*set height */}
+        <div className="col-md-9">
           {activeSection === 'basicInfo' && (
             <div className="card">
               <div className="card-body">
-                <h5 className="card-title">Basic Info Section</h5>
-                <div className="mb-3">
-                  <label htmlFor="name" className="form-label">
-                    Name:
-                  </label>
-                  <input
-                    type="string"
-                    className="form-control"
-                    id="name"
-                    value={userInfo.name}
-                    onChange={(e) => setUserInfo({ ...userInfo, name: e.target.value })}
-                  />
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="phone" className="form-label">
-                    Phone Number:
-                  </label>
-                  <input
-                    type="string"
-                    className="form-control"
-                    id="phone"
-                    value={userInfo.phone}
-                    readOnly
-                  />
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="password" className="form-label">
-                    Password:
-                  </label>
-                  <input
-                    type="string"
-                    className="form-control"
-                    id="password"
-                    value={userInfo.password}
-                    readOnly
-                  />
-                </div>
+                <h5 className="card-title">Profile</h5>
+                {success && <div className="alert alert-success">{success}</div>}
+                {error && <div className="alert alert-danger">{error}</div>}
+                <form onSubmit={handleFormSubmit}>
+                  <div className="mb-3">
+                    <label htmlFor="name" className="form-label">
+                      Name:
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="name"
+                      value={userInfo.name}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="phone" className="form-label">
+                      Phone Number:
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="phone"
+                      value={userInfo.phone}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="password" className="form-label">
+                      Password:
+                    </label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      id="password"
+                      value={userInfo.password}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <button type="submit" className="btn btn-primary">
+                    Save
+                  </button>
+                </form>
               </div>
             </div>
           )}
@@ -131,7 +163,7 @@ const Profile = ({ user, isAuthenticated }) => {
             </div>
           )}
           {activeSection === 'properties' && (
-            <YourProperties userId={user} isAuthenticated={isAuthenticated} />
+            <Yourproperties userId={user} isAuthenticated={isAuthenticated} />
           )}
         </div>
       </div>

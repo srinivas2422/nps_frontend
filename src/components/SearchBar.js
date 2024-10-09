@@ -1,17 +1,13 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 
-const SearchBar = () => {
+const SearchBar = ({ onSearch }) => {
   const [searchInput, setSearchInput] = useState("");
   const [filters, setFilters] = useState({
-    propertyType: [],
     availableFor: [],
     bhkType: [],
     budget: [],
     furnishingType: [],
     carpetArea: [],
-    parking: [],
-    availability: [],
   });
 
   const [suggestions, setSuggestions] = useState([]);
@@ -35,14 +31,14 @@ const SearchBar = () => {
     "LB Nagar",
     "Mehdipatnam",
     "Khairatabad",
+    "Narayanaguda",
+    "Koti",
   ];
 
   const handleInputChange = (e) => {
-    // setSearchInput(e.target.value);
     const inputValue = e.target.value;
     setSearchInput(inputValue);
 
-    // Filter suggestions based on input value
     const filteredSuggestions = locationSuggestions.filter(
       (location) =>
         location.toLowerCase().includes(inputValue.toLowerCase()) &&
@@ -62,7 +58,9 @@ const SearchBar = () => {
     setFilters((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (checked) {
-        updatedFilters[filterCategory].push(id);
+        if (!updatedFilters[filterCategory].includes(id)) {
+          updatedFilters[filterCategory].push(id);
+        }
       } else {
         updatedFilters[filterCategory] = updatedFilters[filterCategory].filter(
           (item) => item !== id
@@ -77,20 +75,16 @@ const SearchBar = () => {
       searchInput,
       filters,
     };
-    console.log("Searching with query:", query);
-    // Perform search logic here, e.g., make an API call with the search query
+    onSearch(query);
   };
 
   const handleClearFilters = () => {
     setFilters({
-      propertyType: [],
       availableFor: [],
       bhkType: [],
       budget: [],
       furnishingType: [],
       carpetArea: [],
-      parking: [],
-      availability: [],
     });
   };
 
@@ -142,7 +136,6 @@ const SearchBar = () => {
               >
                 <i className="bi bi-search"></i>
               </button>
-              
             </div>
             <button
               className="btn btn-primary d-lg-none ms-2"
@@ -156,72 +149,6 @@ const SearchBar = () => {
           </div>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav mb-2 mb-lg-0 w-100 d-flex justify-content-evenly">
-              <li className="nav-item dropdown">
-                <Link
-                  className="btn btn-outline-secondary dropdown-toggle"
-                  to="/"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Property Type
-                </Link>
-                <ul className="dropdown-menu">
-                  <li>
-                    <Link className="dropdown-item" to="/">
-                      Apartment
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item" to="/">
-                      Independent House
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item" to="/">
-                      Colive/pg
-                    </Link>
-                  </li>
-                </ul>
-              </li>
-              <li className="nav-item dropdown">
-                <Link
-                  className="btn btn-outline-secondary dropdown-toggle"
-                  to="/"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  BHK Type
-                </Link>
-                <ul className="dropdown-menu">
-                  <li>
-                    <Link className="dropdown-item" to="/">
-                      1 BHK
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item" to="/">
-                      2 BHK
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item" to="/">
-                      3 BHK
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item" to="/">
-                      4 BHK
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item" to="/">
-                      4+ BHK
-                    </Link>
-                  </li>
-                </ul>
-              </li>
 
               <li className="nav-item">
                 <button
@@ -258,55 +185,18 @@ const SearchBar = () => {
         </div>
         <div className="offcanvas-body">
           <div className="mb-4">
-            <h6>Property Type</h6>
-            <div>
-              <div>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="apartment"
-                  onChange={(e) => handleFilterChange(e, "propertyType")}
-                />
-                <label className="form-check-label" htmlFor="apartment">
-                  Apartment
-                </label>
-              </div>
-              <div>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="independentHouse"
-                  onChange={(e) => handleFilterChange(e, "propertyType")}
-                />
-                <label className="form-check-label" htmlFor="independentHouse">
-                  Independent House
-                </label>
-              </div>
-            </div>
-          </div>
-          <div className="mb-4">
             <h6>Available For</h6>
             <div>
               <div>
                 <input
                   className="form-check-input"
                   type="checkbox"
-                  id="boys"
+                  id="bachelors"
+                  checked={filters.availableFor.includes("bachelors")}
                   onChange={(e) => handleFilterChange(e, "availableFor")}
                 />
-                <label className="form-check-label" htmlFor="boys">
-                  Boys
-                </label>
-              </div>
-              <div>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="girls"
-                  onChange={(e) => handleFilterChange(e, "availableFor")}
-                />
-                <label className="form-check-label" htmlFor="girls">
-                  Girls
+                <label className="form-check-label" htmlFor="bachelors">
+                  Bachelors
                 </label>
               </div>
               <div>
@@ -314,6 +204,7 @@ const SearchBar = () => {
                   className="form-check-input"
                   type="checkbox"
                   id="family"
+                  checked={filters.availableFor.includes("family")}
                   onChange={(e) => handleFilterChange(e, "availableFor")}
                 />
                 <label className="form-check-label" htmlFor="family">
@@ -329,10 +220,11 @@ const SearchBar = () => {
                 <input
                   className="form-check-input"
                   type="checkbox"
-                  id="1rk"
+                  id="1bhk"
+                  checked={filters.bhkType.includes("1bhk")}
                   onChange={(e) => handleFilterChange(e, "bhkType")}
                 />
-                <label className="form-check-label" htmlFor="1rk">
+                <label className="form-check-label" htmlFor="1bhk">
                   1 BHK
                 </label>
               </div>
@@ -341,6 +233,7 @@ const SearchBar = () => {
                   className="form-check-input"
                   type="checkbox"
                   id="2bhk"
+                  checked={filters.bhkType.includes("2bhk")}
                   onChange={(e) => handleFilterChange(e, "bhkType")}
                 />
                 <label className="form-check-label" htmlFor="2bhk">
@@ -352,6 +245,7 @@ const SearchBar = () => {
                   className="form-check-input"
                   type="checkbox"
                   id="3bhk"
+                  checked={filters.bhkType.includes("3bhk")}
                   onChange={(e) => handleFilterChange(e, "bhkType")}
                 />
                 <label className="form-check-label" htmlFor="3bhk">
@@ -363,6 +257,7 @@ const SearchBar = () => {
                   className="form-check-input"
                   type="checkbox"
                   id="4bhk"
+                  checked={filters.bhkType.includes("4bhk")}
                   onChange={(e) => handleFilterChange(e, "bhkType")}
                 />
                 <label className="form-check-label" htmlFor="4bhk">
@@ -373,11 +268,12 @@ const SearchBar = () => {
                 <input
                   className="form-check-input"
                   type="checkbox"
-                  id="5bhk"
+                  id="4plusbhk"
+                  checked={filters.bhkType.includes("4bhk+")}
                   onChange={(e) => handleFilterChange(e, "bhkType")}
                 />
-                <label className="form-check-label" htmlFor="5bhk">
-                  5 BHK
+                <label className="form-check-label" htmlFor="4plusbhk">
+                  4+ BHK
                 </label>
               </div>
             </div>
@@ -385,72 +281,52 @@ const SearchBar = () => {
           <div className="mb-4">
             <h6>Budget</h6>
             <div>
-              
               <div>
                 <input
                   className="form-check-input"
                   type="checkbox"
-                  id="below10k"
+                  id="below20k"
+                  checked={filters.budget.includes("below20k")}
                   onChange={(e) => handleFilterChange(e, "budget")}
                 />
-                <label className="form-check-label" htmlFor="below10k">
-                  below 10K
+                <label className="form-check-label" htmlFor="below20k">
+                  Below 20k
                 </label>
               </div>
               <div>
                 <input
                   className="form-check-input"
                   type="checkbox"
-                  id="10k20k"
+                  id="20to30k"
+                  checked={filters.budget.includes("20to30k")}
                   onChange={(e) => handleFilterChange(e, "budget")}
                 />
-                <label className="form-check-label" htmlFor="10k20k">
-                  10K - 20K
-                </label>
-              </div>
-              
-              <div>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="20k30k"
-                  onChange={(e) => handleFilterChange(e, "budget")}
-                />
-                <label className="form-check-label" htmlFor="20k30k">
-                  20K - 30K
+                <label className="form-check-label" htmlFor="20to30k">
+                  20 - 30k
                 </label>
               </div>
               <div>
                 <input
                   className="form-check-input"
                   type="checkbox"
-                  id="30k40k"
+                  id="30to40k"
+                  checked={filters.budget.includes("30to40k")}
                   onChange={(e) => handleFilterChange(e, "budget")}
                 />
-                <label className="form-check-label" htmlFor="30k40k">
-                  30K - 40K
+                <label className="form-check-label" htmlFor="30to40k">
+                  30 - 40k
                 </label>
               </div>
               <div>
                 <input
                   className="form-check-input"
                   type="checkbox"
-                  id="40k50k"
+                  id="above40k"
+                  checked={filters.budget.includes("above40k")}
                   onChange={(e) => handleFilterChange(e, "budget")}
                 />
-                <label className="form-check-label" htmlFor="40k50k">
-                  40K - 50K
-                </label>
-              </div>
-              <div>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="above50k"
-                  onChange={(e) => handleFilterChange(e, "budget")}
-                />
-                <label className="form-check-label" htmlFor="above50k">
-                  Above 50K+
+                <label className="form-check-label" htmlFor="above40k">
+                  Above 40k
                 </label>
               </div>
             </div>
@@ -462,22 +338,24 @@ const SearchBar = () => {
                 <input
                   className="form-check-input"
                   type="checkbox"
-                  id="fullyFurnished"
+                  id="furnished"
+                  checked={filters.furnishingType.includes("furnished")}
                   onChange={(e) => handleFilterChange(e, "furnishingType")}
                 />
-                <label className="form-check-label" htmlFor="fullyFurnished">
-                  Fully Furnished
+                <label className="form-check-label" htmlFor="furnished">
+                  Furnished
                 </label>
               </div>
               <div>
                 <input
                   className="form-check-input"
                   type="checkbox"
-                  id="semiFurnished"
+                  id="semifurnished"
+                  checked={filters.furnishingType.includes("semifurnished")}
                   onChange={(e) => handleFilterChange(e, "furnishingType")}
                 />
-                <label className="form-check-label" htmlFor="semiFurnished">
-                  Semi Furnished
+                <label className="form-check-label" htmlFor="semifurnished">
+                  Semi-Furnished
                 </label>
               </div>
               <div>
@@ -485,6 +363,7 @@ const SearchBar = () => {
                   className="form-check-input"
                   type="checkbox"
                   id="unfurnished"
+                  checked={filters.furnishingType.includes("unfurnished")}
                   onChange={(e) => handleFilterChange(e, "furnishingType")}
                 />
                 <label className="form-check-label" htmlFor="unfurnished">
@@ -500,142 +379,36 @@ const SearchBar = () => {
                 <input
                   className="form-check-input"
                   type="checkbox"
-                  id="below500"
+                  id="below1000sqft"
+                  checked={filters.carpetArea.includes("below1000sqft")}
                   onChange={(e) => handleFilterChange(e, "carpetArea")}
                 />
-                <label className="form-check-label" htmlFor="below500">
-                  Below 500
+                <label className="form-check-label" htmlFor="below1000sqft">
+                  Below 1000 sqft
                 </label>
               </div>
               <div>
                 <input
                   className="form-check-input"
                   type="checkbox"
-                  id="500to1000"
+                  id="1000to2000sqft"
+                  checked={filters.carpetArea.includes("1000to2000sqft")}
                   onChange={(e) => handleFilterChange(e, "carpetArea")}
                 />
-                <label className="form-check-label" htmlFor="500to1000">
-                  500 - 1000
+                <label className="form-check-label" htmlFor="1000to2000sqft">
+                  1000 - 2000 sqft
                 </label>
               </div>
               <div>
                 <input
                   className="form-check-input"
                   type="checkbox"
-                  id="1000to1500"
+                  id="above2000sqft"
+                  checked={filters.carpetArea.includes("above2000sqft")}
                   onChange={(e) => handleFilterChange(e, "carpetArea")}
                 />
-                <label className="form-check-label" htmlFor="1000to1500">
-                  1000 - 1500
-                </label>
-              </div>
-              <div>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="1500to2000"
-                  onChange={(e) => handleFilterChange(e, "carpetArea")}
-                />
-                <label className="form-check-label" htmlFor="1500to2000">
-                  1500 - 2000
-                </label>
-              </div>
-              <div>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="2000to3000"
-                  onChange={(e) => handleFilterChange(e, "carpetArea")}
-                />
-                <label className="form-check-label" htmlFor="2000to3000">
-                  2000 - 3000
-                </label>
-              </div>
-              <div>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="above3000"
-                  onChange={(e) => handleFilterChange(e, "carpetArea")}
-                />
-                <label className="form-check-label" htmlFor="above3000">
-                  Above 3000+
-                </label>
-              </div>
-            </div>
-          </div>
-          <div className="mb-4">
-            <h6>Parking</h6>
-            <div>
-              <div>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="twoWheeler"
-                  onChange={(e) => handleFilterChange(e, "parking")}
-                />
-                <label className="form-check-label" htmlFor="twoWheeler">
-                  Two Wheeler
-                </label>
-              </div>
-              <div>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="fourWheeler"
-                  onChange={(e) => handleFilterChange(e, "parking")}
-                />
-                <label className="form-check-label" htmlFor="fourWheeler">
-                  Four Wheeler
-                </label>
-              </div>
-            </div>
-          </div>
-          <div className="mb-4">
-            <h6>Availability</h6>
-            <div>
-              <div>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="immediate"
-                  onChange={(e) => handleFilterChange(e, "availability")}
-                />
-                <label className="form-check-label" htmlFor="immediate">
-                  Immediate
-                </label>
-              </div>
-              <div>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="within7days"
-                  onChange={(e) => handleFilterChange(e, "availability")}
-                />
-                <label className="form-check-label" htmlFor="within7days">
-                  Within 7 Days
-                </label>
-              </div>
-              <div>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="within15days"
-                  onChange={(e) => handleFilterChange(e, "availability")}
-                />
-                <label className="form-check-label" htmlFor="within15days">
-                  Within 15 Days
-                </label>
-              </div>
-              <div>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="morethan15days"
-                  onChange={(e) => handleFilterChange(e, "availability")}
-                />
-                <label className="form-check-label" htmlFor="morethan15days">
-                  More than 15 Days
+                <label className="form-check-label" htmlFor="above2000sqft">
+                  Above 2000 sqft
                 </label>
               </div>
             </div>

@@ -9,6 +9,8 @@ import Rent from './components/Rent';
 import SignIn from './components/SignIn';
 import Flat from './components/Flat';
 import Profile from './components/Profile';
+import AboutUs from './components/AboutUs';
+import ContactUs from './components/ContactUs';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -33,6 +35,8 @@ function App() {
           <Route path='/signup' element={<SignIn onSignIn={handleSubmit} title="Sign Up" btn="Sign Up" />}/>
           <Route path="/profile" element={<Profile user={user} isAuthenticated={isAuthenticated}/>} />
           <Route path="/rent/property/:id"  element={<Flat isAuthenticated={isAuthenticated} />}/>
+          <Route path="/about" element={<AboutUs/>} />
+          <Route path='/contact' element={<ContactUs/>}/>
         </Routes>
         <Footer/>
       </Router>
